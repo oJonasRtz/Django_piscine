@@ -62,6 +62,20 @@
 				border-bottom: 1px solid white;
 				text-align: left;
 			}
+			.table td a {
+				text-decoration: none;
+				color: white;
+				background: rgba(255, 255, 255, 0.1);
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				padding: 6px 12px;
+				border-radius: 20px;
+				transition: 0.2s ease;
+				font-size: 0.85rem;
+			}
+			.table td a:hover {
+				background: white;
+				color: rebeccapurple;
+			}
 			.table ul,
 			.table ol {
 				margin: 0;
@@ -240,6 +254,24 @@
 				</tr>
 			</table>
 
+			<h3 class="table_tittle">Portfolio</h3>
+			<table class="table">
+				<tr>
+					<th>Project</th>
+					<th>Description</th>
+					<th>Link</th>
+				</tr>
+				<tr>
+					<td>Transcendence</td>
+					<td>A web-based game platform. I worked on the games (Excalibur.js), game server backend (websockets, endpoints) and matchmaking/ranking system</td>
+					<td><a href="https://github.com/oJonasRtz/transcendence" target="_blank">GitHub</a></td>
+				</tr>
+				<tr>
+					<td>Minishell</td>
+					<td>Implementation of a mini Unix shell with basic commands and piping. I worked on architecture, lexer, AST, redirects, built-in commands and variable expansion</td>
+					<td><a href="https://github.com/oJonasRtz/minishell" target="_blank">GitHub</a></td>
+				</tr>
+			</table>
 		</div>
 
 		<footer class="footer">

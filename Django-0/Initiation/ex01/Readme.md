@@ -5,7 +5,7 @@ This project aims to practice `HTML` and `CSS` focussing on semantics and some c
 - Lists: `<ul>`, `<ol>`, `<li>`
 - Tables: `<table>`, `<th>`, `<tr>`, `<td>`
 - Styling: `<style>` and basic `CSS` properties
-- Links: `<a>`
+- Others: `<a>`, `<title>`
 
 It includes sections like:
 
