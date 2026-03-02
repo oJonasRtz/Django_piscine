@@ -261,8 +261,15 @@
 				</label>
 			</div>
 
-			<button type="submit" onclick="displayFormContents()">Submit</button>
+			<button id="submit" type="submit" onclick="displayFormContents()" disabled>Submit</button>
 		</form>
+		<script>
+			const form = document.getElementById('contact-form');
+			const button = document.getElementById('submit');
 
+			form.addEventListener('input', () => {
+				button.disabled = !form.checkValidity();
+			})
+		</script>
 	</body>
 </html>
