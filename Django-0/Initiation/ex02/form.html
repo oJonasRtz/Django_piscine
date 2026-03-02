@@ -201,7 +201,7 @@
 			}
 		</style>
 
-		<script></script>
+		<script src="popup.js" defer></script>
 	</head>
 	<body>
 
@@ -209,27 +209,27 @@
 			<h1>Contact</h1>
 
 			<div class="field">
-				<input type="text" name="first_name" placeholder=" " required>
+				<input id="firstname" type="text" name="firstname" placeholder=" " required>
 				<label>Firstname</label>
 			</div>
 			
 			<div class="field">
-				<input type="text" name="name" placeholder=" " required>
+				<input type="text" id="name" name="name" placeholder=" " required>
 				<label>Name</label>
 			</div>
 			
 			<div class="field">
-				<input type="number" name="age" placeholder=" " required>
+				<input type="number" id="age" name="age" placeholder=" " required>
 				<label>Age</label>
 			</div>
 			
 			<div class="field">
-				<input type="tel" name="phone" placeholder=" " required>
+				<input type="tel" id="phone" name="phone" placeholder=" " required>
 				<label>Phone</label>
 			</div>
 
 			<div class="field">
-				<input type="email" name="email" placeholder=" " required>
+				<input type="email" id="email" name="email" placeholder=" " required>
 				<label>Email</label>
 			</div>
 			
@@ -240,15 +240,15 @@
 
 				<div class="radio-group">
 					<label class="radio-option">
-						<input type="radio" name="gender" value="male" required>
+						<input type="radio" id="gender_male" name="gender" value="male" required>
 						Male
 					</label>
 					<label class="radio-option">
-						<input type="radio" name="gender" value="female">
+						<input type="radio" id="gender_female" name="gender" value="female">
 						Female
 					</label>
 					<label class="radio-option">
-						<input type="radio" name="gender" value="other">
+						<input type="radio" id="gender_other" name="gender" value="other">
 						Other
 					</label>
 				</div>
@@ -256,12 +256,12 @@
 
 			<div class="check-group">
 				<label>
-					<input type="checkbox" name="is_student" value="yes">
+					<input type="checkbox" id="student" name="is_student" value="yes">
 					Student at 42?
 				</label>
 			</div>
 
-			<button type="submit">Submit</button>
+			<button type="submit" onclick="displayFormContents()">Submit</button>
 		</form>
 
 	</body>
