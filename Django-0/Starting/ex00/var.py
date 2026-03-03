@@ -1,11 +1,11 @@
 
-def get_type(var) -> str:
-	return 'has a type ' + str(type(var));
+# def get_type(var) -> str:
+# 	return 'has a type ' + str(type(var));
 
 # *args is a variable length argument tuple list
-def show_vars(*args) -> None:
-	for (var) in args:
-		print(str(var) + ' ' + get_type(var));
+# def show_vars(*args) -> None:
+# 	for (var) in args:
+# 		print(str(var) + ' ' + get_type(var));
 
 def my_var() -> None:
 
@@ -22,7 +22,10 @@ def my_var() -> None:
 	);
 
 	# *myVars is used to unpack the tuple and pass each element as a separate argument to the function
-	show_vars(*myVars);
+	# show_vars(*myVars);
+
+	for var in myVars:
+		print(str(var) + ' has a type ' + str(type(var)));
 
 if __name__ == "__main__":
 	my_var()
