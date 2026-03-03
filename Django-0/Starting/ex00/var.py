@@ -1,12 +1,4 @@
 
-# def get_type(var) -> str:
-# 	return 'has a type ' + str(type(var));
-
-# *args is a variable length argument tuple list
-# def show_vars(*args) -> None:
-# 	for (var) in args:
-# 		print(str(var) + ' ' + get_type(var));
-
 def my_var() -> None:
 
 	myVars = (
@@ -20,9 +12,6 @@ def my_var() -> None:
 		(42,),		#immutable list of data, can contain different types of data (42, 'banana', 3.14, False)
 		set()		#A list with unique values {1, 2, 1} turns {1, 2}
 	);
-
-	# *myVars is used to unpack the tuple and pass each element as a separate argument to the function
-	# show_vars(*myVars);
 
 	for var in myVars:
 		print(str(var) + ' has a type ' + str(type(var)));
