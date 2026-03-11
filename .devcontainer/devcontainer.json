@@ -4,5 +4,13 @@
 		"dockerfile": "Dockerfile"
 	},
 	"workspaceFolder": "/workspace",
-	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind"
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance"
+			]
+		}
+	}
 }
