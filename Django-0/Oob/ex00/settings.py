@@ -1,0 +1,13 @@
+name="John Doe"
+email="john.doe@example.com"
+phone="123-456-7890"
+location="New York"
+summary="Experienced software developer with a passion for creating innovative solutions. Skilled in Python, JavaScript, and web development. Strong problem-solving abilities and a collaborative team player."
+job_title="Software Developer"
+company="Tech Solutions Inc."
+job_period="Jan 2020 - Present"
+job_description="Developed and maintained web applications using Django and React. Collaborated with cross-functional"
+degree="Bachelor of Science in Computer Science"
+school="University of Technology"
+education_period="2016 - 2020"
+skills=["Python", "Django", "JavaScript", "React", "SQL", "Git", "Agile Methodologies"]

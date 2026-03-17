@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>{name}'s CV</title>
+
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				margin: 40px;
+				color: #222;
+			}
+
+			h1 {
+				margin-bottom: 5px;
+			}
+
+			h2 {
+				margin-top: 30px;
+				border-bottom: 1px solid #ccc;
+				padding-bottom: 5px;
+			}
+
+			.info {
+				margin-bottom: 20px;
+			}
+
+			.section {
+				margin-bottom: 20px;
+			}
+
+			.item {
+				margin-bottom: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>{name}</h1>
+
+			<header class="info">
+				<p>Email: {email}</p>
+				<p>Phone: {phone}</p>
+				<p>Location: {location}</p>
+			</header>
+
+			<section class="section">
+				<h2>Summary</h2>
+				<p>{summary}</p>
+			</section>
+
+			<section class="section">
+				<h2>Experience</h2>
+
+				<div class="item">
+					<strong>{job_title}</strong> - {company}<br>
+					<small>{job_period}</small>
+					<p>{job_description}</p>
+				</div>
+			</section>
+
+			<section class="section">
+				<h2>Education</h2>
+
+				<div class="item">
+					<strong>{degree}</strong> - {school}<br>
+					<small>{education_period}</small>
+				</div>
+			</section>
+
+			<section class="section">
+				<h2>Skills</h2>
+				<p>{skills}</p>
+			</section>
+		</main>
+	</body>
+</html>
