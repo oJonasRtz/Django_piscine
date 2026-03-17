@@ -10,6 +10,7 @@
 
 ## Virtual Machine
 - `mkdir -p ~/shared`: Create the mount point inside de VM
+-  `sudo mount -t vboxsf -o uid=$(id -u),gid=$(id -g) shared ~/shared` Mount for user access
 - `sudo mount -t vboxsf <Folder Name> ~/shared`
 
 ### Notes
