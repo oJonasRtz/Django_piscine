@@ -12,6 +12,15 @@ COLORS = {
 def log(msg, color="reset"):
 	print(f"{COLORS[color]}{msg}{COLORS['reset']}")
 
+
+ALL_TAG_CLASSES = [
+	Html, Head, Body, Title, Meta, Img, Table, Tr, Th, Td,
+	Ul, Ol, Li, H1, H2, P, Div, Span, Hr, Br
+]
+
+DOUBLE_TAG_CLASSES = [cls for cls in ALL_TAG_CLASSES if cls().tag_type == 'double']
+SIMPLE_TAG_CLASSES = [cls for cls in ALL_TAG_CLASSES if cls().tag_type == 'simple']
+
 def test(name, func):
 	try:
 		func()
@@ -29,59 +38,71 @@ def test(name, func):
 
 # -- TESTS --
 def test_inheritance():
-	assert isinstance(Html(), Elem), "Html should be a subclass of Elem"
-	assert isinstance(Body(), Elem), "Body should be a subclass of Elem"
-	assert isinstance(Br(), Elem), "Br should be a subclass of Elem"
-	assert isinstance(Hr(), Elem), "Hr should be a subclass of Elem"
-	assert isinstance(Head(), Elem), "Head should be a subclass of Elem"
-	assert isinstance(Title(), Elem), "Title should be a subclass of Elem"
-	assert isinstance(Meta(), Elem), "Meta should be a subclass of Elem"
-	assert isinstance(Img(), Elem), "Img should be a subclass of Elem"
-	assert isinstance(Table(), Elem), "Table should be a subclass of Elem"
-	assert isinstance(Tr(), Elem), "Tr should be a subclass of Elem"
-	assert isinstance(Th(), Elem), "Th should be a subclass of Elem"
-	assert isinstance(Td(), Elem), "Td should be a subclass of Elem"
-	assert isinstance(Ul(), Elem), "Ul should be a subclass of Elem"
-	assert isinstance(Ol(), Elem), "Ol should be a subclass of Elem"
-	assert isinstance(Li(), Elem), "Li should be a subclass of Elem"
-	assert isinstance(H1(), Elem), "H1 should be a subclass of Elem"
-	assert isinstance(H2(), Elem), "H2 should be a subclass of Elem"
-	assert isinstance(P(), Elem), "P should be a subclass ofElem"
+	for cls in ALL_TAG_CLASSES:
+		assert isinstance(cls(), Elem), f"{cls.__name__} should be a subclass of Elem"
 
 def test_empty_tags():
-	assert str(Html()) == '<html></html>',  "Html should render as <html></html>"
-	assert str(Body()) == '<body></body>',  "Body should render as <body></body>"
-	assert str(Br()) == '<br />',  "Br should render as <br />"
-	assert str(Hr()) == '<hr />',  "Hr should render as <hr />"
-	assert str(Head()) == '<head></head>',  "Head should render as <head></head>"
-	assert str(Title()) == '<title></title>',  "Title should render as <title></title>"
-	assert str(Meta()) == '<meta />',  "Meta should render as <meta />"
-	assert str(Img()) == '<img />',  "Img should render as <img />"
-	assert str(Table()) == '<table></table>',  "Table should render as <table></table>"
-	assert str(Tr()) == '<tr></tr>',  "Tr should render as <tr></tr>"
-	assert str(Th()) == '<th></th>',  "Th should render as <th></th>"
-	assert str(Td()) == '<td></td>',  "Td should render as <td></td>"
-	assert str(Ul()) == '<ul></ul>',  "Ul should render as <ul></ul>"
-	assert str(Ol()) == '<ol></ol>',  "Ol should render as <ol></ol>"
-	assert str(Li()) == '<li></li>',  "Li should render as <li></li>"
-	assert str(H1()) == '<h1></h1>',  "H1 should render as <h1></h1>"
-	assert str(H2()) == '<h2></h2>',  "H2 should render as <h2></h2>"
-	assert str(P()) == '<p></p>',  "P should render as <p></p>"
+	for cls in DOUBLE_TAG_CLASSES:
+		tag = cls().tag
+		expected = f'<{tag}></{tag}>'
+		assert str(cls()) == expected, f"{cls.__name__} should render as {expected}"
+
+	for cls in SIMPLE_TAG_CLASSES:
+		tag = cls().tag
+		expected = f'<{tag} />'
+		assert str(cls()) == expected, f"{cls.__name__} should render as {expected}"
  
-def test_nesting():
-    doc = Html([Head(), Body()])
-    expected = '<html>\n  <head></head>\n  <body></body>\n</html>'
-    assert str(doc) == expected, f"Expected {expected}, got {str(doc)}"
+def test_nesting_all_tags_as_parents():
+	for cls in DOUBLE_TAG_CLASSES:
+		parent = cls(Span(Text("inside")))
+		tag = cls().tag
+		expected = (
+			f'<{tag}>\n'
+			'  <span>\n'
+			'    inside\n'
+			'  </span>\n'
+			f'</{tag}>'
+		)
+		assert str(parent) == expected, (
+			f"{cls.__name__} nesting failed. Expected {expected}, got {str(parent)}"
+		)
 
-def test_text_content():
-    title = Title(Text("My Title"))
-    expected = '<title>\n  My Title\n</title>'
-    assert str(title) == expected, f"Expected {expected}, got {str(title)}"
 
-def test_attributes():
-	img = Img(attr={"src": "image.png", "alt": "An image"})
-	expected = '<img alt="An image" src="image.png" />'
-	assert str(img) == expected, f"Expected {expected}, got {str(img)}"
+def test_nesting_all_tags_as_children():
+	for cls in ALL_TAG_CLASSES:
+		child = cls(attr={"id": "child"})
+		parent = Div([child])
+		child_render = str(child)
+		expected = f'<div>\n  {child_render}\n</div>'
+		assert str(parent) == expected, (
+			f"{cls.__name__} as child nesting failed. Expected {expected}, got {str(parent)}"
+		)
+
+def test_content_all_double_tags():
+	for cls in DOUBLE_TAG_CLASSES:
+		elem = cls(Text("My Title"))
+		tag = cls().tag
+		expected = f'<{tag}>\n  My Title\n</{tag}>'
+		assert str(elem) == expected, f"{cls.__name__} content failed. Expected {expected}, got {str(elem)}"
+
+def test_attributes_all_tags():
+	attrs = {"id": "node", "class": "primary"}
+
+	for cls in DOUBLE_TAG_CLASSES:
+		tag = cls().tag
+		elem = cls(attr=attrs)
+		expected = f'<{tag} class="primary" id="node"></{tag}>'
+		assert str(elem) == expected, (
+			f"{cls.__name__} attributes failed. Expected {expected}, got {str(elem)}"
+		)
+
+	for cls in SIMPLE_TAG_CLASSES:
+		tag = cls().tag
+		elem = cls(attr=attrs)
+		expected = f'<{tag} class="primary" id="node" />'
+		assert str(elem) == expected, (
+			f"{cls.__name__} attributes failed. Expected {expected}, got {str(elem)}"
+		)
 
 def test_self_closing():
     assert str(Br()) == '<br />', "Br should render as <br />"
@@ -134,9 +155,10 @@ def run_tests():
 	tests = [
 		('Inheritance test', test_inheritance),
 		('Empty tags test', test_empty_tags),
-		('Nesting test', test_nesting),
-		('Text content test', test_text_content),
-		('Attributes test', test_attributes),
+		('Nesting parents test', test_nesting_all_tags_as_parents),
+		('Nesting children test', test_nesting_all_tags_as_children),
+		('Text content all tags test', test_content_all_double_tags),
+		('Attributes all tags test', test_attributes_all_tags),
 		('Self-closing test', test_self_closing),
 		('List content test', test_list_content),
 		('Full document test', test_full_document)

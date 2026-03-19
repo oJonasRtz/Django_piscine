@@ -1,4 +1,4 @@
-from elem import Elem
+from elem import Elem, Text
 
 class Html(Elem):
     def __init__(self, content=None, attr={}):
@@ -79,3 +79,20 @@ class Hr(Elem):
 class Br(Elem):
 	def __init__(self, content=None, attr={}):
 		super().__init__(tag='br', attr=attr, content=content, tag_type='simple')
+  
+
+def main():
+    doc = Html([
+		Head([
+			Title(Text('"Hello ground!"'))
+       	]),
+		Body([
+			H1(Text('"Oh no, not again!"')),
+			Img(attr={"src": "http://i.imgur.com/pfp3T.jpg"})
+		])
+	])
+    
+    print(doc)
+
+if __name__ == "__main__":
+    main()
