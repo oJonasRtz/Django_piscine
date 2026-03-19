@@ -130,8 +130,8 @@ def test_title_h1_h2_li_th_td_must_contain_exactly_one_text():
 
 
 def test_p_must_only_contain_text():
-	assert_valid(Html([Head(Title(Text("ok"))), Body(Div(P([Text("a"), Text("b")])))]), "P containing only Text should be valid")
-	assert_invalid(Html([Head(Title(Text("ok"))), Body(Div(P(Span(Text("x")))))]), "P containing an Elem should be invalid")
+	assert_valid(Html([Head(Title(Text("ok"))), Body(Span(P([Text("a"), Text("b")])))]), "P containing only Text should be valid")
+	assert_invalid(Html([Head(Title(Text("ok"))), Body(Span(P(Span(Text("x")))))]), "P containing an Elem should be invalid")
 
 
 def test_span_must_only_contain_text_or_p():
@@ -184,23 +184,30 @@ def test_str_prepends_doctype_only_for_html_root():
 def test_write_to_file_prepends_doctype_only_for_html_root():
 	html_path = "./_tmp_page_html.html"
 	non_html_path = "./_tmp_page_non_html.html"
+	txt_path = "./_tmp_page_html.txt"
 
 	try:
 		Page(make_valid_doc()).write_to_file(html_path)
 		Page(Div(Text("x"))).write_to_file(non_html_path)
+		Page(make_valid_doc()).write_to_file(txt_path)
 
 		with open(html_path, "r", encoding="utf-8") as f:
 			html_data = f.read()
 		with open(non_html_path, "r", encoding="utf-8") as f:
 			non_html_data = f.read()
+		with open(txt_path, "r", encoding="utf-8") as f:
+			txt_data = f.read()
 
 		assert html_data.startswith("<!DOCTYPE html>\n"), "Html file output must include doctype"
 		assert not non_html_data.startswith("<!DOCTYPE html>"), "Non-html file output must not include doctype"
+		assert not txt_data.startswith("<!DOCTYPE html>"), "Txt file output must not include doctype"
 	finally:
 		if os.path.exists(html_path):
 			os.remove(html_path)
 		if os.path.exists(non_html_path):
 			os.remove(non_html_path)
+		if os.path.exists(txt_path):
+			os.remove(txt_path)
 
 # -- RUN TESTS --
 def run_tests():
