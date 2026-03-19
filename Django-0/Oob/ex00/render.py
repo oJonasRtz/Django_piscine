@@ -9,7 +9,7 @@ def write_file(filename, content) -> bool:
     except Exception:
        return 0
 
-def read_file(filename):
+def read_file(filename: str) -> str:
     try:
         with open(filename, 'r') as file:
            return file.read()
@@ -17,7 +17,7 @@ def read_file(filename):
         message(f"Failed to read {highlight(filename)}.", "error")
         sys.exit(1)
 
-def render_template(template):
+def render_template(template: str):
 	if not isinstance(template, str):
 		return None
 	
@@ -25,7 +25,7 @@ def render_template(template):
 	context = {
 		k: v
 		for k, v in vars(settings).items()
-		if not k.startswith('__')
+		if not k.startswith('__') and isinstance(v, (str, int, float, list))
 	}
 
 	def replace_variable(match):
@@ -38,7 +38,8 @@ def render_template(template):
 			return ', '.join(map(str, value))
 
 		return str(value)
-  
+    
+    #{     name    } -> name
 	return re.sub(r'{\s*(\w+)\s*}', replace_variable, template)
 
     
@@ -95,8 +96,8 @@ def main() -> None:
         name = arg.split('.')[0]
         if not write_file(f"{name}.html", rendered_string):
             message(f"Failed to create {highlight(f'{name}.html')}.", "error")
-        else:
-        	message(f"{highlight(f'{name}.html')} has been created successfully.", "success")
+            sys.exit(1)
+        message(f"{highlight(f'{name}.html')} has been created successfully.", "success")
 
 if __name__ == "__main__":
     main()
