@@ -2,10 +2,13 @@ import beverages
 import random
 
 class CoffeeMachine:
-	def __init__(self):
+	def _reset_state(self):
 		self.broken = False
-		self.drinks_limit = 10
 		self.drinks_served = 0
+    
+	def __init__(self):
+		self._reset_state()
+		self.drinks_limit = 10
 		
 	# -- Classes --
 	class EmptyCup(beverages.HotBeverage):
@@ -38,8 +41,7 @@ class CoffeeMachine:
 		if not self.broken:
 			return
 
-		self.broken = False
-		self.drinks_served = 0
+		self._reset_state()
 
 
 def serve_test(machine, n):

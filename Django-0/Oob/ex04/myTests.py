@@ -1,7 +1,9 @@
 import ast
 import os
+import subprocess
+import sys
 
-import intern
+from elem import Elem, Text
 
 COLORS = {
 	"reset": "\033[0m",
@@ -13,7 +15,7 @@ COLORS = {
 }
 
 def log(msg, color="reset"):
-	print(f"{COLORS[color]}{msg}{COLORS['reset']}")
+    print(f"{COLORS[color]}{msg}{COLORS['reset']}")
 
 
 ASSERT_COUNTER = {
@@ -48,62 +50,104 @@ def test(name, func):
 		log(f"[ERROR] {name} [{ASSERT_COUNTER['passed']}/{ASSERT_COUNTER['executed']}]", "red")
 		log(f"  -> Unexpected error: {e}", "yellow")
 		return False
-	
+    
 
 # -- TESTS --
-DEFAULT_NAME = "My name? I’m nobody, an intern, I have no name."
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-def test_name():
-	# -- test default name --
-	nameless = intern.Intern()
-	check(str(nameless) == DEFAULT_NAME, f"Expected default name, got '{nameless.name}'")
 
-	# -- test custom name --
-	custom_name = "Alice"
-	alice = intern.Intern(custom_name)
-	check(str(alice) == custom_name, f"Expected name '{custom_name}', got '{alice.name}'")
+def test_text_basic_behavior():
+	check(isinstance(Text(), str), "Text must inherit from str")
+	check(str(Text()) == "", "Default Text() should be empty string")
+	check(str(Text("foo")) == "foo", "Text should keep plain string content")
+	check(str(Text("foo\nbar")) == "foo\n<br />\nbar", "Text should convert newlines to <br />")
+	check(str(Text('<>"\'')) == "&lt;&gt;&quot;&apos;", "Text should escape HTML sensitive chars")
 
-def __str__test():
-	check(str(intern.Intern()) == DEFAULT_NAME, "Expected default name string representation")
-	name = intern.Intern("Bob")
-	check(str(name) == "Bob", "Expected custom name string representation")
 
-def coffee_str_test():
-	expected = "This is the worst coffee you ever tasted."
-	coffee = intern.Coffee()
-	check(str(coffee) == expected, f"Expected '{expected}', got '{str(coffee)}'")
+def test_elem_core_behavior():
+	root = Elem(tag="div", attr={"id": "main"}, content=[Text("hello"), Elem()], tag_type="double")
+	data = str(root)
+	check(data.startswith('<div id="main">'), "Elem should render opening tag with attributes")
+	check("hello" in data, "Elem should render text content")
+	check("<div></div>" in data, "Elem should render nested elem content")
+	check(data.endswith("</div>"), "Elem should render closing tag for double tag type")
 
-def make_coffee_test():
-	myIntern = intern.Intern()
-	myCoffee = myIntern.make_coffee()
-	
-	check(isinstance(myCoffee, intern.Coffee), "Expected an instance of Coffee")
-	check(str(myCoffee) == "This is the worst coffee you ever tasted.", "Coffee string mismatch")
- 
-def work_test():
-	i = intern.Intern()
-	
+	simple = Elem(tag="img", attr={"src": "x"}, tag_type="simple")
+	check(str(simple) == '<img src="x" />', "Simple tag should render as self-closing tag")
+
+
+def test_elem_validation_error_on_bad_content():
+	bad_raised = False
 	try:
-		i.work()
-		check(False, "Expected Exception was not raised")
-	except Exception as e:
-		check(type(e) is Exception, f"Expected an Exception to be raised, got {type(e)}")
-		expected = "I’m just an intern, I can’t do that..."
-		check(str(e) == expected, f"Expected exception message '{expected}', got '{str(e)}'")
+		Elem(content=1)
+	except Elem.ValidationError:
+		bad_raised = True
+	check(bad_raised, "Elem must raise ValidationError on invalid content type")
+
+	bad_list_raised = False
+	try:
+		Elem(content=[Text("ok"), 1])
+	except Elem.ValidationError:
+		bad_list_raised = True
+	check(bad_list_raised, "Elem must raise ValidationError when list contains invalid content type")
 
 
-def test_intern_file_has_no_imports():
-	intern_path = os.path.join(os.path.dirname(__file__), "intern.py")
-	with open(intern_path, "r", encoding="utf-8") as f:
+def test_subject_html_structure_replication():
+	html = Elem(tag='html', content=[
+		Elem(tag='head', content=[
+			Elem(tag='title', content=Text('"Hello ground!"'), tag_type='double')
+		], tag_type='double'),
+		Elem(tag='body', content=[
+			Elem(tag='h1', content=[Text('"Oh no, not again!"')], tag_type='double'),
+			Elem(tag='img', attr={'src': "http://i.imgur.com/pfp3T.jpg"}, tag_type='simple'),
+		], tag_type='double')
+	], tag_type='double')
+
+	doc = str(html)
+	check(doc.startswith("<html>"), "Structure should start with html tag")
+	check("<head>" in doc and "</head>" in doc, "Structure should contain head tag")
+	check("<title>" in doc and "</title>" in doc, "Structure should contain title tag")
+	check("&quot;Hello ground!&quot;" in doc, "Title text should be present and escaped")
+	check("<body>" in doc and "</body>" in doc, "Structure should contain body tag")
+	check("<h1>" in doc and "</h1>" in doc, "Structure should contain h1 tag")
+	check("&quot;Oh no, not again!&quot;" in doc, "H1 text should be present and escaped")
+	check('<img src="http://i.imgur.com/pfp3T.jpg" />' in doc, "Structure should contain required img tag")
+
+
+def test_elem_file_has_no_imports():
+	elem_path = os.path.join(BASE_DIR, "elem.py")
+	with open(elem_path, "r", encoding="utf-8") as f:
 		source = f.read()
 
 	tree = ast.parse(source)
-	import_nodes = [node for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))]
-	check(len(import_nodes) == 0, "intern.py must not contain import statements for this exercise")
+	imports = [node for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))]
+	check(len(imports) == 0, "ex04 allows no imports in elem.py")
+
+
+def test_official_subject_tests_py_passes():
+	official_tests = os.path.join(BASE_DIR, "tests.py")
+	check(
+		os.path.exists(official_tests),
+		"Official tests.py not found in ex04. Please extract d02.tar and ensure tests.py is present."
+	)
+
+	result = subprocess.run(
+		[sys.executable, "tests.py"],
+		cwd=BASE_DIR,
+		capture_output=True,
+		text=True,
+	)
+
+	combined_output = (result.stdout or "") + ("\n" + result.stderr if result.stderr else "")
+	if result.returncode != 0:
+		preview = "\n".join(combined_output.strip().splitlines()[-12:])
+		check(False, f"Official tests.py exited with code {result.returncode}.\nLast output lines:\n{preview}")
+
+	check("Tests succeeded!" in combined_output, "Official tests.py did not report 'Tests succeeded!'")
 
 
 def dry_bonus_repeated_logic_checker_test():
-	target_path = os.path.join(os.path.dirname(__file__), "intern.py")
+	target_path = os.path.join(BASE_DIR, "elem.py")
 	with open(target_path, "r", encoding="utf-8") as f:
 		source = f.read()
 
@@ -225,20 +269,23 @@ def dry_bonus_repeated_logic_checker_test():
 
 	check(
 		len(repeated) == 0,
-		"Possible repeated logic in intern.py (consider extracting helper functions): " + " | ".join(details)
+		"Possible repeated logic in elem.py (consider extracting helper functions): " + " | ".join(details)
 	)
 
 # -- RUN TESTS --
 def run_tests():
 	log("=== RUNNING TESTS ===", "blue")
 	
+	#tests = [
+	#	("Test description", test_function),
+	#]
 	tests = [
-		("Name Test", test_name),
-		("Intern.__str__ Test", __str__test),
-		("Coffee.__str__ Test", coffee_str_test),
-		("make_coffee Test", make_coffee_test),
-		("Intern.work Test", work_test),
-		("No imports in intern.py", test_intern_file_has_no_imports),
+		("Text basic behavior", test_text_basic_behavior),
+		("Elem core behavior", test_elem_core_behavior),
+		("Elem ValidationError behavior", test_elem_validation_error_on_bad_content),
+		("Subject HTML structure replication", test_subject_html_structure_replication),
+		("No imports in elem.py", test_elem_file_has_no_imports),
+		("Official tests.py passes", test_official_subject_tests_py_passes),
 	]
 	bonus_tests = [
 		("DRY repeated logic check", dry_bonus_repeated_logic_checker_test),
@@ -266,4 +313,4 @@ def run_tests():
 			log(f"[EXTRA TODO] {name} (does not affect main score)", "yellow")
 
 if __name__ == "__main__":
-	run_tests()
+    run_tests()
